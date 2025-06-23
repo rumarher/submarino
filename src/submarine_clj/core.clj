@@ -27,12 +27,13 @@
                                                reset-orientation
                                                reset-speed
                                                exit-loop
-                                               update-game-engine]]))
+                                               update-game-engine
+                                               parse-user-input]]))
 
 
 
 (def repl-submarine-control-panel
-  [:prompt #(printf "submarine order: ")
+  [:prompt #(print "submarine order: ")
    :read   (fn [request-prompt request-exit]
              (or ({:line-start request-prompt :stream-end request-exit}
                   (skip-whitespace *in*))
@@ -44,17 +45,17 @@
                (= user-input "roll starboard")     (roll-starboard-1)
                (= user-input "roll port")          (roll-port-1)
 	       (= user-input "ascend")             (ascend-1)
-	       (= user-input "ascend lot")         (ascend-lot)
+	       (= user-input "ascend lot")         (ascend-lot 15)
 	       (= user-input "descend")            (descend-1)
-	       (= user-input "descend lot")        (descend-lot)
-               (= user-input "turn lot starboard") (turn-starboard-lot)
-               (= user-input "turn lot port")      (turn-port-lot)
-               (= user-input "roll lot starboard") (roll-starboard-lot)
-               (= user-input "roll lot port")      (roll-port-lot)
+	       (= user-input "descend lot")        (descend-lot 15)
+               (= user-input "turn lot starboard") (turn-starboard-lot 5)
+               (= user-input "turn lot port")      (turn-port-lot 5)
+               (= user-input "roll lot starboard") (roll-starboard-lot 5)
+               (= user-input "roll lot port")      (roll-port-lot 5)
 	       (= user-input "tilt down")          (tilt-down-1)
 	       (= user-input "tilt up")            (tilt-up-1)
-	       (= user-input "tilt lot down")      (tilt-up-lot)
-	       (= user-input "tilt lot up")        (tilt-down-lot)
+	       (= user-input "tilt lot down")      (tilt-up-lot 5)
+	       (= user-input "tilt lot up")        (tilt-down-lot 5)
 
                (= user-input "inc speed")          (inc-speed-1)
                (= user-input "dec speed")          (dec-speed-1)
@@ -68,7 +69,9 @@
                (= user-input "update")             (update-game-engine)
                (= user-input "exit")               (do
                                                      (reset! exit-loop true))
-	       :else (println "Bad input!" user-input)))])
+	       :else (let [[inst arg] (parse-user-input user-input)]
+                       
+                       )))])
 
 (defn -main
   "I don't do a whole lot ... yet."

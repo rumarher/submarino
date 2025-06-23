@@ -92,24 +92,6 @@
     (setQuaternionSubmarine (roll-rad) (pitch-rad) (heading-rad))
     (rotate-vector quat-submarine orientation-submarine))) ;; ->
 
-(defn roll-port-lot []
-  (dotimes [_ 5] (roll-port-1)))
-
-(defn roll-starboard-lot []
-  (dotimes [_ 5] (roll-starboard-1)))
-
-(defn tilt-down-lot []
-  (dotimes [_ 5] (tilt-down-1)))
-
-(defn tilt-up-lot []
-  (dotimes [_ 5] (tilt-up-1)))
-
-(defn turn-port-lot []
-  (dotimes [_ 5] (turn-port-1)))
-
-(defn turn-starboard-lot []
-  (dotimes [_ 5] (turn-starboard-1)))
-
 (defn ascend-1 []
   (when-not (<= @depth 0)
     (reset! depth (dec @depth))))
@@ -117,11 +99,29 @@
 (defn descend-1 []
   (reset! depth (inc @depth)))
 
-(defn ascend-lot []
-  (dotimes [_ 15] (ascend-1)))
+(defn roll-port-lot [times]
+  (dotimes [_ times] (roll-port-1)))
 
-(defn descend-lot []
-  (dotimes [_ 15] (descend-1)))
+(defn roll-starboard-lot [times]
+  (dotimes [_ times] (roll-starboard-1)))
+
+(defn tilt-down-lot [times]
+  (dotimes [_ times] (tilt-down-1)))
+
+(defn tilt-up-lot [times]
+  (dotimes [_ times] (tilt-up-1)))
+
+(defn turn-port-lot [times]
+  (dotimes [_ times] (turn-port-1)))
+
+(defn turn-starboard-lot [times]
+  (dotimes [_ times] (turn-starboard-1)))
+
+(defn ascend-lot [times]
+  (dotimes [_ times] (ascend-1)))
+
+(defn descend-lot [times]
+  (dotimes [_ times] (descend-1)))
 
 (defn inc-speed-1 []
   (when-not (> @linear-speed 10)
@@ -151,6 +151,25 @@
   (reset-coord)
   (reset-orientation)
   (reset-speed))
+
+(defn parse-user-input [user-input]
+  (let [patt-tr #"^\s*(turn|roll)\s+(starboard|port)\s+(\d+)\s*$"
+        patt-ad #"^\s*(ascend|descend)\s+(\d+)\s*$"
+        patt-ti #"^\s*(tilt)\s+(up|down)\s+(\d+)\s*$"
+        patt-full (re-pattern (str "(" patt-tr ")"
+                                   "|(" patt-ad ")"
+                                   "|(" patt-ti ")"))
+        parsed-ui (vec (remove nil? (re-matches patt-full user-input)))
+        the-order (nth parsed-ui 2 [])]
+    (if (not-empty parsed-ui)
+      (if (or (= "descend" the-order)
+              (= "ascend" the-order))
+        {:order the-order,
+         :quantity (nth parsed-ui 3)}
+        {:order the-order,
+         :orientation (nth parsed-ui 3)
+         :quantity (nth parsed-ui 4)})
+      nil)))
 
 (defn roll-status []
   (str (cond
