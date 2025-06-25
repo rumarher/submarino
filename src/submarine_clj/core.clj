@@ -69,7 +69,7 @@
                (= user-input "update")             (update-game-engine)
                (= user-input "exit")               (do
                                                      (reset! exit-loop true))
-	       :else (let [[inst arg] (parse-user-input user-input)]
+	       :else (let [user-input-map (parse-user-input user-input)]
                        
                        )))])
 

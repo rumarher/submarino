@@ -152,6 +152,12 @@
   (reset-orientation)
   (reset-speed))
 
+(defn resolve-map-order [{the-order :order
+                          the-direction :direction 
+                          the-quantity :quantity}]
+  ((-> (str "submarine-clj.mysubmarine/" the-order "-" the-direction "-lot")
+       symbol resolve) the-quantity))
+
 (defn parse-user-input [user-input]
   (let [patt-tr #"^\s*(turn|roll)\s+(starboard|port)\s+(\d+)\s*$"
         patt-ad #"^\s*(ascend|descend)\s+(\d+)\s*$"
